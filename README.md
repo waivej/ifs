@@ -37,7 +37,7 @@ The collaborative classroom experience was made possible by a companion website 
 
 Over 13 years of classes and summer programs, students created thousands of IFS images. The galleries below span college math courses, The Gilbert School, and multiple CAMPY summer sessions from 2004 through 2017.
 
-**[Browse all galleries →](galleries/index.html)**
+**[Browse all galleries →](galleries/index.html) or [live link →](https://waiveris.com/ifsgalleries)**
 
 Each class was given a prompt image to inspire their work. A selection of those prompts:
 
