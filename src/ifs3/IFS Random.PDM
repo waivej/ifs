@@ -1,0 +1,98 @@
+[Root]
+Most Recent Package=IFS Random Installation
+
+
+[Package|IFS Random Installation|Root]
+SubWizProgID=PDWizard.SetupPkgSubWiz
+BuildFolder=Z:\Customers\math\Fractal Projects\Random\Package\setup
+
+[Package|IFS Random Installation|Configure DAO ISAMs]
+Applicable=No
+
+[Package|IFS Random Installation|Configure DAO ODBC]
+JetWorkspace=
+ODBCDirect=
+
+[Package|IFS Random Installation|Files Found]
+
+[Package|IFS Random Installation|Files Released]
+
+[Package|IFS Random Installation|Missing Dependency Information]
+
+[Package|IFS Random Installation|Out-of-Date Dependency Information]
+C:\WINNT\system32\COMDLG32.OCX=
+C:\WINNT\system32\scrrun.dll=
+
+[Package|IFS Random Installation|Files Added]
+
+[Package|IFS Random Installation|Files Removed]
+
+[Package|IFS Random Installation|Files In Project]
+Z:\Customers\math\Fractal Projects\Random\IFS_Rand.exe=Yes
+C:\WINNT\system32\msvbvm60.dll=Yes
+C:\WINNT\system32\OLEAUT32.DLL=Yes
+C:\WINNT\system32\OLEPRO32.DLL=Yes
+C:\WINNT\system32\ASYCFILT.DLL=Yes
+C:\WINNT\system32\STDOLE2.TLB=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\COMCAT.DLL=Yes
+C:\WINNT\system32\scrrun.dll=Yes
+C:\WINNT\system32\msvcrt.dll=Yes
+C:\WINNT\system32\COMDLG32.OCX=Yes
+C:\WINNT\system32\COMCTL32.OCX=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\SETUP.EXE=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\SETUP1.EXE=Yes
+C:\WINNT\system32\VB6STKIT.DLL=Yes
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\ST6UNST.EXE=Yes
+
+[Package|IFS Random Installation|Configure Registry Files]
+Applicable=No
+
+[Package|IFS Random Installation|Configure Remote Servers]
+Applicable=No
+
+[Package|IFS Random Installation|Install Locations]
+Z:\Customers\math\Fractal Projects\Random\IFS_Rand.exe=$(AppPath)
+C:\WINNT\system32\msvbvm60.dll=$(WinSysPathSysFile)
+C:\WINNT\system32\OLEAUT32.DLL=$(WinSysPathSysFile)
+C:\WINNT\system32\OLEPRO32.DLL=$(WinSysPathSysFile)
+C:\WINNT\system32\ASYCFILT.DLL=$(WinSysPathSysFile)
+C:\WINNT\system32\STDOLE2.TLB=$(WinSysPathSysFile)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\Redist\COMCAT.DLL=$(WinSysPathSysFile)
+C:\WINNT\system32\scrrun.dll=$(WinSysPath)
+C:\WINNT\system32\msvcrt.dll=$(WinSysPathSysFile)
+C:\WINNT\system32\COMDLG32.OCX=$(WinSysPath)
+C:\WINNT\system32\COMCTL32.OCX=$(WinSysPath)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\SETUP.EXE=$(AppPath)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\SETUP1.EXE=$(WinPath)
+C:\WINNT\system32\VB6STKIT.DLL=$(WinSysPathSysFile)
+C:\Program Files\Microsoft Visual Studio\VB98\Wizards\PDWizard\ST6UNST.EXE=$(WinPath)
+
+[Package|IFS Random Installation|Configure Shared Files]
+Applicable=Yes
+Z:\Customers\math\Fractal Projects\Random\IFS_Rand.exe=No
+
+[Package|IFS Random Installation|Distribution]
+Type=single
+Size=
+Title=IFS Random Installation
+
+[Package|IFS Random Installation|IconGroups]
+Group0=Math Tools
+PrivateGroup0=False
+Parent0=$(Programs)
+
+[Package|IFS Random Installation|Math Tools]
+Icon1=IFS_Rand.exe
+Title1=IFS
+StartIn1=$(AppPath)
+Key1=Icon1
+
+[Package|IFS Random Installation|Package]
+PackageFolder=Z:\Customers\math\Fractal Projects\Random\Package\setup
+ProjectFolder=Z:\Customers\math\Fractal Projects\Random
+ServerSideCab=
+File1=Z:\Customers\math\Fractal Projects\Random\Package\setup\setup.exe
+File2=Z:\Customers\math\Fractal Projects\Random\Package\setup\Setup.Lst
+File3=Z:\Customers\math\Fractal Projects\Random\Package\setup\IFS_Rand.CAB
+Handler1=PDWizard.FolderDplySubWiz
+Handler2=PDWizard.WebPostDplySubWiz
