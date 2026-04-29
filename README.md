@@ -27,9 +27,11 @@ The 12-page classroom tutorial used to teach students how to use the application
 
 At the Yale Fractal Workshop in 2004, the original IFS application was shared by **[Michael Frame](https://en.wikipedia.org/wiki/Michael_Frame)**, a mathematician at Yale who spent decades collaborating with Mandelbrot on fractal geometry education and curriculum. At that same workshop, the developer and his father both attended and had the opportunity to meet and eat lunch with **Benoit Mandelbrot**, the mathematician who coined the term "fractal."
 
-For many years afterward, the developer's father used this application in his **college mathematics courses** and in summer programs like **CAMPY** (for high school students). Each semester, students would generate their own IFS images — a process that often revealed an artistic side in students who didn't think of themselves as artists. The best images were submitted to a panel of professional artists who voted on their favorites. The top-scoring students received **custom screen-printed t-shirts** bearing their own IFS design.
+For many years afterward, the developer's father — a college mathematics professor — built the IFS application into the heart of his teaching. He used it in his **college mathematics courses** and in summer programs like **CAMPY** (for high school students), where it became a recurring highlight of the curriculum. John maintained and extended the software throughout this period specifically to support his father's classroom work, adding features, fixing problems, and eventually porting the whole application to the web so students no longer needed to install anything.
 
-The collaborative classroom experience was made possible by a companion website where students could create accounts, upload their `.ifs` files and rendered images, and browse what their classmates had created. This gallery aspect was central to the experience — seeing your work alongside others, and competing in a friendly artistic competition, made the mathematics feel alive.
+Each semester, students would generate their own IFS images — a process that often revealed an artistic side in students who didn't think of themselves as artists. The best images were submitted to a panel of professional artists who voted on their favorites. The top-scoring students received **custom screen-printed t-shirts** bearing their own IFS design.
+
+The collaborative classroom experience was made possible by a companion website John built alongside the application, where students could create accounts, upload their `.ifs` files and rendered images, and browse what their classmates had created. This gallery aspect was central to the experience — seeing your work alongside others, and competing in a friendly artistic competition, made the mathematics feel alive.
 
 ---
 
@@ -207,7 +209,7 @@ A fully self-contained `ifs.html` that runs in any browser with no server, no in
 
 - Original IFS application by **[Michael Frame](https://en.wikipedia.org/wiki/Michael_Frame)** ([Yale University](https://fas.yale.edu/news-announcements/faculty-retirement-and-memorial-tributes/faculty-retirement-tributes-2016/michael-frame)) — mathematician, longtime collaborator of Benoit Mandelbrot, and creator of fractal geometry curriculum used in classrooms for decades. Thank you.
 - Extended, maintained, and ported to the web by **John Waiveris**
-- Classroom curriculum and sample `.ifs` files created by his father, a college mathematics professor
+- Classroom curriculum, sample `.ifs` files, and the pedagogical vision behind the project created by his father, a college mathematics professor who used this application to teach fractal geometry for over a decade
 - Inspired by the work of **Benoit Mandelbrot** and **Michael Barnsley**
 - Deep gratitude to the **Stone Soup Group** and all contributors to **[Fractint](https://en.wikipedia.org/wiki/Fractint)** — the freeware DOS fractal explorer that introduced a generation to this world and remains one of the most remarkable pieces of software ever written
 
