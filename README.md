@@ -25,7 +25,7 @@ The 12-page classroom tutorial used to teach students how to use the application
 ![Mandelbrot standing beside a large physical Sierpinski triangle built from folded paper](photos/IMG_0969.JPG)
 *Mandelbrot with a physical Sierpinski triangle at the Yale Fractal Workshop, 2004 — the day this project started*
 
-At the Yale Fractal Workshop in 2004, the original application was shared by a Yale instructor as a Visual Basic 6 program. At that same workshop, the developer and his father both attended and had the opportunity to meet and eat lunch with **Benoit Mandelbrot**, the mathematician who coined the term "fractal."
+At the Yale Fractal Workshop in 2004, the original IFS application was shared by **[Michael Frame](https://en.wikipedia.org/wiki/Michael_Frame)**, a mathematician at Yale who spent decades collaborating with Mandelbrot on fractal geometry education and curriculum. At that same workshop, the developer and his father both attended and had the opportunity to meet and eat lunch with **Benoit Mandelbrot**, the mathematician who coined the term "fractal."
 
 For many years afterward, the developer's father used this application in his **college mathematics courses** and in summer programs like **CAMPY** (for high school students). Each semester, students would generate their own IFS images — a process that often revealed an artistic side in students who didn't think of themselves as artists. The best images were submitted to a panel of professional artists who voted on their favorites. The top-scoring students received **custom screen-printed t-shirts** bearing their own IFS design.
 
@@ -37,7 +37,7 @@ The collaborative classroom experience was made possible by a companion website 
 
 Over 13 years of classes and summer programs, students created thousands of IFS images. The galleries below span college math courses, The Gilbert School, and multiple CAMPY summer sessions from 2004 through 2017.
 
-**[Browse all galleries →](galleries/index.html) or [live link →](https://waiveris.com/ifsgalleries)**
+**[Browse all galleries →](galleries/)**
 
 Each class was given a prompt image to inspire their work. A selection of those prompts:
 
@@ -205,7 +205,7 @@ A fully self-contained `ifs.html` that runs in any browser with no server, no in
 
 ## Credits
 
-- Original VB6 application from the **Yale Fractal Workshop** (instructor unknown)
+- Original IFS application by **[Michael Frame](https://en.wikipedia.org/wiki/Michael_Frame)** ([Yale University](https://fas.yale.edu/news-announcements/faculty-retirement-and-memorial-tributes/faculty-retirement-tributes-2016/michael-frame)) — mathematician, longtime collaborator of Benoit Mandelbrot, and creator of fractal geometry curriculum used in classrooms for decades. Thank you.
 - Extended, maintained, and ported to the web by **John Waiveris**
 - Classroom curriculum and sample `.ifs` files created by his father, a college mathematics professor
 - Inspired by the work of **Benoit Mandelbrot** and **Michael Barnsley**
