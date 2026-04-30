@@ -474,10 +474,24 @@ function run(countiterations) {
     SX1 = x1v; SX2 = x2v; SY1 = y1v; SY2 = y2v;
   }
 
-  const numPoints     = Math.max(1, parseInt(document.getElementById('points').value)     || 10000);
+  const numPoints     = Math.max(1, parseInt(document.getElementById('points').value) || 10000);
   const numIterations = countiterations
-    ? Math.max(1, parseInt(document.getElementById('iterations').value) || 5)
+    ? (parseInt(document.getElementById('iterations').value) || 0)
     : 1;
+
+  // n=0: draw the unit square — the seed shape before any transformations are applied
+  if (countiterations && numIterations === 0) {
+    const pixelscalex = canvas.width  / (SX2 - SX1);
+    const pixelscaley = canvas.height / (SY2 - SY1);
+    const px0 = Math.round((0 - SX1) * pixelscalex);
+    const py0 = Math.round((SY2 - 1) * pixelscaley);
+    const pw  = Math.round((1 - SX1) * pixelscalex) - px0;
+    const ph  = Math.round((SY2 - 0) * pixelscaley) - py0;
+    context.strokeStyle = '#000';
+    context.lineWidth = 1;
+    context.strokeRect(px0 + 0.5, py0 + 0.5, pw, ph);
+    return;
+  }
 
   // Pre-compute trig values for each transform
   const rcost   = [], rsint   = [];
