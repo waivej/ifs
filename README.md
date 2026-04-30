@@ -4,7 +4,9 @@ An interactive tool for exploring **Iterated Function Systems (IFS)**, a class o
 
 ---
 
-## 🚀 [Try it — Standalone IFS Explorer](standalone/ifs.html)
+## 🚀 Try it — Standalone IFS Explorer
+
+**[Run it online](https://waiveris.com/ifsgalleries/ifs.html)** &nbsp;|&nbsp; **[Download the HTML file](standalone/ifs.html)**
 
 A self-contained version that runs in any modern browser with no installation, no server, and no CMS. Open the file and start exploring. Includes 9 sample fractals, local `.ifs` file open/save, and PNG export.
 
