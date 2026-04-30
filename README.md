@@ -83,6 +83,7 @@ Setting probability to **0** disables a row, allowing students to see the contri
 | **IFS 4** | VB6 | Transitional version; same codebase in two configurations — `src/ifs4/` (standalone exe build) and `src/ifs4.0/` (web build); did not see wide classroom use |
 | **IFS 5** | VB6 | Extended to 9 transformation rows; added phi parameter independently from theta; source in `src/ifs5/` |
 | **IFS Web** | JavaScript + CMS | Ported to run in a browser inside the Invisible Gold CMS; rendering in JavaScript on an HTML5 canvas; source in `src/ifsweb/` |
+| **[IFS Standalone](standalone/ifs.html)** | HTML + JavaScript | Self-contained single-file version; open in any browser with no server or install required; includes 9 sample fractals and local file open/save |
 
 IFS 3 was the workhorse. Distributing the VB6 executable on campus networks was often slow — IT departments needed weeks to approve the Visual Basic runtime — so a web version was developed. The web version launched around the time the developer's father retired, and the classroom program concluded before it was fully tested in a live course.
 

@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>IFS Explorer</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: Tahoma, Arial, sans-serif;
+  font-size: 11px;
+  background: #d4d0c8;
+  color: #000;
+  user-select: none;
+}
+
+/* ── Menu bar ── */
+#menubar {
+  background: #d4d0c8;
+  border-bottom: 1px solid #808080;
+  padding: 2px 0;
+  display: flex;
+}
+.menu-item {
+  padding: 2px 8px;
+  cursor: default;
+  position: relative;
+}
+.menu-item:hover, .menu-item.open {
+  background: #0a246a;
+  color: #fff;
+}
+.dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #d4d0c8;
+  border: 1px solid;
+  border-color: #fff #808080 #808080 #fff;
+  min-width: 160px;
+  z-index: 100;
+  box-shadow: 2px 2px 0 #000;
+}
+.menu-item.open .dropdown { display: block; }
+.dropdown-item {
+  padding: 3px 24px 3px 8px;
+  cursor: default;
+  white-space: nowrap;
+}
+.dropdown-item:hover { background: #0a246a; color: #fff; }
+.dropdown-sep { height: 1px; background: #808080; margin: 2px 4px; }
+
+/* ── Layout ── */
+#main {
+  display: flex;
+  padding: 8px;
+  gap: 8px;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+/* ── Win95-style inset/raised borders ── */
+.raised {
+  border: 2px solid;
+  border-color: #fff #808080 #808080 #fff;
+  background: #d4d0c8;
+  padding: 6px;
+}
+.sunken {
+  border: 2px solid;
+  border-color: #808080 #fff #fff #808080;
+  background: #fff;
+}
+
+/* ── Transform table ── */
+#transform-table { border-collapse: collapse; }
+#transform-table th {
+  font-weight: bold;
+  text-align: center;
+  padding: 1px 3px 3px;
+  border-bottom: 1px solid #808080;
+  font-size: 10px;
+  white-space: nowrap;
+}
+#transform-table td { padding: 1px 2px; }
+#transform-table input[type=text] {
+  width: 44px;
+  font-size: 11px;
+  font-family: Tahoma, Arial, sans-serif;
+  border: 1px solid;
+  border-color: #808080 #fff #fff #808080;
+  background: #fff;
+  padding: 1px 2px;
+  text-align: right;
+}
+
+/* ── Controls ── */
+#controls {
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+#controls input[type=text] {
+  font-family: Tahoma, Arial, sans-serif;
+  font-size: 11px;
+  border: 1px solid;
+  border-color: #808080 #fff #fff #808080;
+  background: #fff;
+  padding: 1px 2px;
+  text-align: right;
+}
+
+/* ── Buttons ── */
+button {
+  font-family: Tahoma, Arial, sans-serif;
+  font-size: 11px;
+  background: #d4d0c8;
+  border: 2px solid;
+  border-color: #fff #808080 #808080 #fff;
+  padding: 3px 12px;
+  cursor: pointer;
+  min-width: 80px;
+}
+button:active { border-color: #808080 #fff #fff #808080; padding: 4px 11px 2px 13px; }
+button:focus { outline: 1px dotted #000; outline-offset: -4px; }
+
+/* ── Canvas panel ── */
+#canvas-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+}
+#image {
+  display: block;
+}
+
+/* ── Viewport controls ── */
+#viewport-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+}
+#viewport-controls input[type=text] {
+  width: 52px;
+  font-family: Tahoma, Arial, sans-serif;
+  font-size: 11px;
+  border: 1px solid;
+  border-color: #808080 #fff #fff #808080;
+  background: #fff;
+  padding: 1px 2px;
+  text-align: right;
+}
+
+/* ── Run buttons ── */
+#run-buttons { display: flex; gap: 6px; margin-top: 8px; }
+#run-buttons button { flex: 1; }
+
+/* ── Status bar ── */
+#statusbar {
+  border-top: 1px solid #808080;
+  padding: 2px 6px;
+  font-size: 10px;
+  color: #444;
+  background: #d4d0c8;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+</style>
+</head>
+<body>
+
+<!-- Menu bar -->
+<div id="menubar">
+  <div class="menu-item" id="menu-file" onclick="toggleMenu('file',event)">File
+    <div class="dropdown" id="dropdown-file">
+      <div class="dropdown-item" onclick="fileNew()">New</div>
+      <div class="dropdown-item" onclick="fileOpen()">Open...</div>
+      <div class="dropdown-sep"></div>
+      <div class="dropdown-item" onclick="fileSave()">Save As...</div>
+      <div class="dropdown-item" onclick="savePNG()">Save PNG...</div>
+    </div>
+  </div>
+  <div class="menu-item" id="menu-samples" onclick="toggleMenu('samples',event)">Samples
+    <div class="dropdown" id="dropdown-samples">
+      <!-- populated by JS -->
+    </div>
+  </div>
+</div>
+
+<!-- Hidden file input -->
+<input type="file" id="file-input" accept=".ifs" style="display:none" onchange="handleFileOpen(event)">
+
+<!-- Main layout -->
+<div id="main">
+
+  <!-- Left: transformation table + controls -->
+  <div class="raised">
+    <form name="ifs" onsubmit="return false;">
+      <table id="transform-table">
+        <thead>
+          <tr>
+            <th>r</th><th>s</th><th>&theta;</th><th>&phi;</th>
+            <th>e</th><th>f</th><th>prob</th>
+          </tr>
+        </thead>
+        <tbody id="transform-rows">
+          <!-- rows generated by JS -->
+        </tbody>
+      </table>
+
+      <div id="controls">
+        <span>Iterations</span>
+        <input type="text" id="iterations" name="iterations" value="5"
+               style="width:36px" onclick="this.select()">
+        <span>Points</span>
+        <input type="text" id="points" name="points" value="50000"
+               style="width:60px" onclick="this.select()">
+      </div>
+
+      <div id="run-buttons">
+        <button type="button" onclick="run(true)">Run</button>
+        <button type="button" onclick="run(false)" style="min-width:140px">Run &infin; Iterations</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Right: canvas + viewport -->
+  <div id="canvas-panel">
+    <div class="sunken" style="padding:2px; display:inline-block;">
+      <canvas id="image" width="480" height="480"></canvas>
+    </div>
+    <div id="viewport-controls">
+      X&nbsp;<input type="text" id="x1" name="x1" value="-1.02" onclick="this.select()">
+            <input type="text" id="x2" name="x2" value="1.02"  onclick="this.select()">
+      &nbsp;&nbsp;Y&nbsp;<input type="text" id="y1" name="y1" value="-1.02" onclick="this.select()">
+            <input type="text" id="y2" name="y2" value="1.02"  onclick="this.select()">
+    </div>
+  </div>
+
+</div>
+
+<div id="statusbar">IFS Explorer &mdash; based on the classroom application by Charles Waiveris</div>
+
+<script>
+// ── Samples ────────────────────────────────────────────────────────────────────
+// Row fields: r, s, theta, phi, e, f, prob
+// phi defaults to theta when blank (matching VB6 behavior)
+const SAMPLES = [
+  {
+    name: 'Sierpinski Triangle',
+    rows: [
+      {r:'.5',   s:'.5',  theta:'',    phi:'', e:'',     f:'',     prob:'1'},
+      {r:'.5',   s:'.5',  theta:'',    phi:'', e:'.5',   f:'',     prob:'1'},
+      {r:'.5',   s:'.5',  theta:'',    phi:'', e:'.25',  f:'.5',   prob:'1'},
+    ],
+    iterations:'5', points:'50000', x1:'-.1', x2:'1.1', y1:'-.1', y2:'1.1'
+  },
+  {
+    name: 'Snowflake 3',
+    rows: [
+      {r:'.27',  s:'.27', theta:'60',  phi:'', e:'.85',  f:'',     prob:'2'},
+      {r:'1',    s:'.95', theta:'80',  phi:'', e:'',     f:'',     prob:'12'},
+      {r:'.8',   s:'.05', theta:'',    phi:'', e:'',     f:'.5',   prob:'2'},
+      {r:'.4',   s:'.05', theta:'',    phi:'', e:'',     f:'',     prob:'2'},
+    ],
+    iterations:'5', points:'200000', x1:'-1.02', x2:'1.02', y1:'-1.02', y2:'1.02'
+  },
+  {
+    name: 'Spiral Thing 3',
+    rows: [
+      {r:'.3',   s:'.04', theta:'',    phi:'', e:'-.4',  f:'.8',   prob:'1'},
+      {r:'.04',  s:'.4',  theta:'-220',phi:'', e:'.9',   f:'.9',   prob:'1'},
+      {r:'.9',   s:'.81', theta:'',    phi:'', e:'',     f:'',     prob:''},
+      {r:'.24',  s:'.24', theta:'',    phi:'', e:'-.809',f:'-.588',prob:''},
+      {r:'.24',  s:'.24', theta:'',    phi:'', e:'.309', f:'-.952',prob:''},
+      {r:'1',    s:'.92', theta:'-12', phi:'', e:'',     f:'',     prob:'20'},
+    ],
+    iterations:'5', points:'100000', x1:'-1.1', x2:'1.7', y1:'-1.5', y2:'1.5'
+  },
+  {
+    name: 'Frametree',
+    rows: [
+      {r:'.05',  s:'.6',  theta:'',    phi:'', e:'',     f:'',     prob:'1'},
+      {r:'.05',  s:'-.5', theta:'',    phi:'', e:'',     f:'1',    prob:'1'},
+      {r:'.6',   s:'.5',  theta:'40',  phi:'', e:'',     f:'.6',   prob:'2'},
+      {r:'.5',   s:'.45', theta:'20',  phi:'', e:'',     f:'1.1',  prob:'2'},
+      {r:'.5',   s:'.55', theta:'-30', phi:'', e:'',     f:'1',    prob:'2'},
+      {r:'.55',  s:'.4',  theta:'-40', phi:'', e:'',     f:'.7',   prob:'2'},
+    ],
+    iterations:'5', points:'100000', x1:'-1.02', x2:'1.02', y1:'0', y2:'2.2'
+  },
+  {
+    name: 'Many Circles',
+    rows: [
+      {r:'.13',  s:'-.3', theta:'30',  phi:'', e:'.7',   f:'.4',   prob:'1'},
+      {r:'1',    s:'1',   theta:'160', phi:'', e:'.05',  f:'',     prob:'10'},
+      {r:'-.1',  s:'.1',  theta:'',    phi:'', e:'.3',   f:'',     prob:'1'},
+    ],
+    iterations:'5', points:'200000', x1:'-.48', x2:'.48', y1:'-.48', y2:'.48'
+  },
+  {
+    name: 'Three Rings',
+    rows: [
+      {r:'-.015',s:'.01', theta:'',    phi:'', e:'-.2',  f:'-.7',  prob:'1'},
+      {r:'.06',  s:'.05', theta:'90',  phi:'', e:'-.5',  f:'-1',   prob:''},
+      {r:'-.015',s:'.01', theta:'30',  phi:'', e:'-.4',  f:'-1.1', prob:'1'},
+      {r:'.14',  s:'.3',  theta:'-26', phi:'', e:'.1',   f:'-.36', prob:''},
+      {r:'.015', s:'.01', theta:'',    phi:'', e:'-.5',  f:'-1.3', prob:'1'},
+      {r:'1',    s:'1',   theta:'172', phi:'', e:'.3',   f:'1',    prob:'100'},
+    ],
+    iterations:'5', points:'100000', x1:'-1.95', x2:'2.15', y1:'-1.5', y2:'2.5'
+  },
+  {
+    name: 'Mask',
+    rows: [
+      {r:'1',    s:'.01', theta:'-90', phi:'', e:'.6',   f:'',     prob:''},
+      {r:'.33',  s:'.15', theta:'',    phi:'', e:'.62',  f:'.15',  prob:'1'},
+      {r:'.15',  s:'.33', theta:'69',  phi:'', e:'.42',  f:'.96',  prob:'1'},
+      {r:'.15',  s:'.62', theta:'50',  phi:'', e:'-.23', f:'-.55', prob:'1'},
+      {r:'.62',  s:'.15', theta:'-80', phi:'', e:'.64',  f:'.92',  prob:'1'},
+      {r:'-1',   s:'1',   theta:'',    phi:'', e:'',     f:'',     prob:'90'},
+    ],
+    iterations:'5', points:'200000', x1:'-1.5', x2:'1.5', y1:'-1.1', y2:'1.5'
+  },
+  {
+    name: 'Dancing Star',
+    rows: [
+      {r:'.24',  s:'.24', theta:'',    phi:'', e:'.4',   f:'.4',   prob:''},
+      {r:'.012', s:'.5',  theta:'108', phi:'', e:'.97',  f:'.21',  prob:'1'},
+      {r:'.2',   s:'.2',  theta:'',    phi:'', e:'.1',   f:'.1',   prob:''},
+      {r:'.24',  s:'.24', theta:'',    phi:'', e:'-.809',f:'-.588',prob:''},
+      {r:'.012', s:'.23', theta:'-78', phi:'', e:'.2',   f:'-.85', prob:''},
+      {r:'.95',  s:'1',   theta:'-36', phi:'', e:'',     f:'',     prob:'15'},
+    ],
+    iterations:'5', points:'100000', x1:'-1.5', x2:'1.5', y1:'-1.5', y2:'1.5'
+  },
+  {
+    name: 'Star on Star',
+    rows: [
+      {r:'.01',  s:'.1',  theta:'-89', phi:'', e:'',     f:'-.3',  prob:'1'},
+      {r:'.36',  s:'.01', theta:'45',  phi:'', e:'-.307',f:'-.51', prob:'1'},
+      {r:'.04',  s:'.3',  theta:'24',  phi:'', e:'-.34', f:'.36',  prob:'1'},
+      {r:'.04',  s:'-.3', theta:'15',  phi:'', e:'-.05', f:'-.48', prob:'1'},
+      {r:'.36',  s:'.01', theta:'135', phi:'', e:'.309', f:'-.5',  prob:'1'},
+      {r:'.97',  s:'1',   theta:'72',  phi:'', e:'',     f:'',     prob:'10'},
+    ],
+    iterations:'5', points:'100000', x1:'-1', x2:'1', y1:'-1.2', y2:'1'
+  },
+];
+
+// ── Build transform row inputs ─────────────────────────────────────────────────
+(function buildRows() {
+  const tbody = document.getElementById('transform-rows');
+  for (let i = 0; i < 10; i++) {
+    const tr = document.createElement('tr');
+    const fields = ['r','s','theta','phi','e','f','prob'];
+    for (const field of fields) {
+      const td = document.createElement('td');
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.id   = (field === 'prob') ? `p${i}` : `${field}${i}`;
+      input.name = (field === 'prob') ? `prob${i}` : `${field}${i}`;
+      input.addEventListener('click', function() { this.select(); });
+      td.appendChild(input);
+      tr.appendChild(td);
+    }
+    tbody.appendChild(tr);
+  }
+})();
+
+// ── Build Samples menu ─────────────────────────────────────────────────────────
+(function buildSamplesMenu() {
+  const dropdown = document.getElementById('dropdown-samples');
+  SAMPLES.forEach((sample, i) => {
+    const item = document.createElement('div');
+    item.className = 'dropdown-item';
+    item.textContent = sample.name;
+    item.onclick = () => { loadSample(i); closeMenus(); };
+    dropdown.appendChild(item);
+  });
+})();
+
+// ── Menu handling ──────────────────────────────────────────────────────────────
+let openMenu = null;
+
+function toggleMenu(name, event) {
+  event.stopPropagation();
+  const item = document.getElementById(`menu-${name}`);
+  if (openMenu === name) {
+    item.classList.remove('open');
+    openMenu = null;
+  } else {
+    closeMenus();
+    item.classList.add('open');
+    openMenu = name;
+  }
+}
+
+function closeMenus() {
+  document.querySelectorAll('.menu-item.open').forEach(el => el.classList.remove('open'));
+  openMenu = null;
+}
+
+document.addEventListener('click', () => closeMenus());
+
+// ── Load sample ────────────────────────────────────────────────────────────────
+function loadSample(idx) {
+  const sample = SAMPLES[idx];
+  const empty = {r:'',s:'',theta:'',phi:'',e:'',f:'',prob:''};
+  for (let i = 0; i < 10; i++) {
+    const row = sample.rows[i] || empty;
+    setField(`r${i}`,     row.r);
+    setField(`s${i}`,     row.s);
+    setField(`theta${i}`, row.theta);
+    setField(`phi${i}`,   row.phi);
+    setField(`e${i}`,     row.e);
+    setField(`f${i}`,     row.f);
+    setField(`p${i}`,     row.prob);
+  }
+  setField('iterations', sample.iterations);
+  setField('points',     sample.points);
+  setField('x1', sample.x1);  setField('x2', sample.x2);
+  setField('y1', sample.y1);  setField('y2', sample.y2);
+  run(false);
+}
+
+function setField(id, val) {
+  const el = document.getElementById(id);
+  if (el) el.value = (val !== undefined && val !== null) ? val : '';
+}
+
+// ── Renderer ───────────────────────────────────────────────────────────────────
+let SX1 = -1.02, SX2 = 1.02, SY1 = -1.02, SY2 = 1.02;
+
+function clearCanvas() {
+  const canvas = document.getElementById('image');
+  canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function run(countiterations) {
+  clearCanvas();
+  const canvas  = document.getElementById('image');
+  const context = canvas.getContext('2d');
+  context.fillStyle = '#000';
+
+  // Read transform rows
+  const r = [], s = [], theta = [], phi = [], e = [], f = [], p = [];
+  for (let i = 0; i < 10; i++) {
+    r[i]     = getNumber(`r${i}`);
+    s[i]     = getNumber(`s${i}`);
+    theta[i] = getNumber(`theta${i}`);
+    e[i]     = getNumber(`e${i}`);
+    f[i]     = getNumber(`f${i}`);
+    p[i]     = getNumber(`p${i}`);
+    // phi defaults to theta when the field is left blank (matches VB6 behavior)
+    const phiEl = document.getElementById(`phi${i}`);
+    phi[i] = (phiEl && phiEl.value.trim() !== '') ? getNumber(`phi${i}`) : theta[i];
+  }
+
+  // Update viewport if valid
+  const x1v = parseFloat(document.getElementById('x1').value);
+  const x2v = parseFloat(document.getElementById('x2').value);
+  const y1v = parseFloat(document.getElementById('y1').value);
+  const y2v = parseFloat(document.getElementById('y2').value);
+  if (isFinite(x1v) && isFinite(x2v) && isFinite(y1v) && isFinite(y2v) &&
+      x2v > x1v && y2v > y1v) {
+    SX1 = x1v; SX2 = x2v; SY1 = y1v; SY2 = y2v;
+  }
+
+  const numPoints     = Math.max(1, parseInt(document.getElementById('points').value)     || 10000);
+  const numIterations = countiterations
+    ? Math.max(1, parseInt(document.getElementById('iterations').value) || 5)
+    : 1;
+
+  // Pre-compute trig values for each transform
+  const rcost   = [], rsint   = [];
+  const scosphi = [], ssinphi = [];
+  for (let i = 0; i < 10; i++) {
+    rcost[i]   = r[i] * Math.cos(theta[i] * Math.PI / 180);
+    rsint[i]   = r[i] * Math.sin(theta[i] * Math.PI / 180);
+    scosphi[i] = s[i] * Math.cos(phi[i]   * Math.PI / 180);
+    ssinphi[i] = s[i] * Math.sin(phi[i]   * Math.PI / 180);
+  }
+
+  // Normalize probabilities — rows with blank prob are never selected
+  let totalprob = 0;
+  for (let i = 0; i < 10; i++) totalprob += p[i];
+  if (totalprob === 0) {
+    // Fall back: give equal weight to any row that has any non-zero parameter
+    for (let i = 0; i < 10; i++) {
+      if (r[i] || s[i] || theta[i] || e[i] || f[i]) p[i] = 1;
+    }
+    for (let i = 0; i < 10; i++) totalprob += p[i];
+  }
+  if (totalprob === 0) return; // nothing to render
+
+  const pixelscalex = canvas.width  / (SX2 - SX1);
+  const pixelscaley = canvas.height / (SY2 - SY1);
+
+  let X1 = 0.5, Y1 = 0.5;
+
+  for (let c = 0; c < numPoints; c++) {
+    if (countiterations) {
+      // Fresh random starting point for each chain
+      X1 = Math.random();
+      Y1 = Math.random();
+    }
+
+    // Apply numIterations transforms, accumulating state
+    for (let iter = 0; iter < numIterations; iter++) {
+      // Pick a transform row weighted by probability
+      let z = 0;
+      const pick = totalprob * Math.random();
+      let accum = 0;
+      for (let t = 0; t < 10; t++) {
+        z = t;
+        accum += p[t];
+        if (pick <= accum) break;
+      }
+
+      // Apply affine transform:
+      //   X' = X·r·cos(θ)  −  Y·s·sin(φ)  +  e
+      //   Y' = X·r·sin(θ)  +  Y·s·cos(φ)  +  f
+      const X = X1 * rcost[z] - Y1 * ssinphi[z] + e[z];
+      const Y = X1 * rsint[z] + Y1 * scosphi[z] + f[z];
+      X1 = X; Y1 = Y;
+    }
+
+    // Map fractal coordinates to canvas pixels
+    context.fillRect(
+      Math.round((X1 - SX1) * pixelscalex),
+      Math.round((SY2 - Y1) * pixelscaley),
+      1, 1
+    );
+  }
+}
+
+// ── Utilities ──────────────────────────────────────────────────────────────────
+function getNumber(id) {
+  const el = document.getElementById(id);
+  if (!el || el.value.trim() === '') return 0;
+  const v = el.value * 1;
+  return (typeof v === 'number' && isFinite(v)) ? v : 0;
+}
+
+// ── File: New ──────────────────────────────────────────────────────────────────
+function fileNew() {
+  closeMenus();
+  for (let i = 0; i < 10; i++) {
+    for (const field of ['r','s','theta','phi','e','f']) setField(`${field}${i}`, '');
+    setField(`p${i}`, '');
+  }
+  setField('iterations', '5');
+  setField('points', '50000');
+  setField('x1', '-1.02'); setField('x2', '1.02');
+  setField('y1', '-1.02'); setField('y2', '1.02');
+  clearCanvas();
+}
+
+// ── File: Open ─────────────────────────────────────────────────────────────────
+function fileOpen() {
+  closeMenus();
+  document.getElementById('file-input').value = '';
+  document.getElementById('file-input').click();
+}
+
+function handleFileOpen(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const bytes = new Uint8Array(e.target.result);
+    // Detect XOR encoding: plain-text files are entirely printable ASCII + CR/LF
+    const isPlain = bytes.every(b => (b >= 32 && b <= 126) || b === 10 || b === 13);
+    const text = isPlain
+      ? new TextDecoder().decode(bytes)
+      : new TextDecoder('latin1').decode(bytes.map(b => b ^ 97));
+    applyIFS(parseIFS(text));
+    run(false);
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function parseIFS(text) {
+  const lines = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n')
+                    .split('\n').filter(l => l !== '');
+
+  // File format: r|s|theta|e|f|prob[|phi]
+  // Note: e comes before phi in the file but phi comes before e in the UI
+  function parseRow(line) {
+    const f = line.split('|');
+    return {
+      r:    f[0] ?? '', s:   f[1] ?? '', theta: f[2] ?? '',
+      e:    f[3] ?? '', f:   f[4] ?? '', prob:  f[5] ?? '',
+      phi:  f[6] ?? ''
+    };
+  }
+
+  const rows = [];
+  for (let i = 0; i < 6 && i < lines.length; i++) rows.push(parseRow(lines[i]));
+  const iterations = lines[6] ?? '5';
+  const points     = lines[7] ?? '50000';
+  const vp = (lines[8] ?? '-1.02|1.02|-1.02|1.02').split('|');
+  for (let i = 9; i <= 12 && i < lines.length; i++) rows.push(parseRow(lines[i]));
+  while (rows.length < 10) rows.push({r:'',s:'',theta:'',phi:'',e:'',f:'',prob:''});
+
+  return {
+    rows: rows.slice(0, 10), iterations, points,
+    x1: vp[0] ?? '-1.02', x2: vp[1] ?? '1.02',
+    y1: vp[2] ?? '-1.02', y2: vp[3] ?? '1.02'
+  };
+}
+
+function applyIFS(data) {
+  const empty = {r:'',s:'',theta:'',phi:'',e:'',f:'',prob:''};
+  for (let i = 0; i < 10; i++) {
+    const row = data.rows[i] || empty;
+    setField(`r${i}`,     row.r);
+    setField(`s${i}`,     row.s);
+    setField(`theta${i}`, row.theta);
+    setField(`phi${i}`,   row.phi);
+    setField(`e${i}`,     row.e);
+    setField(`f${i}`,     row.f);
+    setField(`p${i}`,     row.prob);
+  }
+  setField('iterations', data.iterations);
+  setField('points',     data.points);
+  setField('x1', data.x1); setField('x2', data.x2);
+  setField('y1', data.y1); setField('y2', data.y2);
+}
+
+// ── File: Save ─────────────────────────────────────────────────────────────────
+function fileSave() {
+  closeMenus();
+  const lines = [];
+  // Rows 0–5 (basic rows)
+  for (let i = 0; i < 6; i++) lines.push(rowToLine(i));
+  lines.push(document.getElementById('iterations').value);
+  lines.push(document.getElementById('points').value);
+  const x1 = document.getElementById('x1').value;
+  const x2 = document.getElementById('x2').value;
+  const y1 = document.getElementById('y1').value;
+  const y2 = document.getElementById('y2').value;
+  lines.push(`${x1}|${x2}|${y1}|${y2}`);
+  // Rows 6–9 (extended rows)
+  for (let i = 6; i < 10; i++) lines.push(rowToLine(i));
+  downloadText(lines.join('\r\n') + '\r\n', 'fractal.ifs');
+}
+
+function rowToLine(i) {
+  const rv    = document.getElementById(`r${i}`).value;
+  const sv    = document.getElementById(`s${i}`).value;
+  const thetav= document.getElementById(`theta${i}`).value;
+  const phiv  = document.getElementById(`phi${i}`).value;
+  const ev    = document.getElementById(`e${i}`).value;
+  const fv    = document.getElementById(`f${i}`).value;
+  const probv = document.getElementById(`p${i}`).value;
+  // File field order: r|s|theta|e|f|prob|phi
+  return `${rv}|${sv}|${thetav}|${ev}|${fv}|${probv}|${phiv}`;
+}
+
+function downloadText(text, filename) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([text], {type: 'text/plain'}));
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+// ── File: Save PNG ─────────────────────────────────────────────────────────────
+function savePNG() {
+  closeMenus();
+  const a = document.createElement('a');
+  a.href = document.getElementById('image').toDataURL('image/png');
+  a.download = 'fractal.png';
+  a.click();
+}
+
+// Load Sierpinski Triangle on startup
+loadSample(0);
+</script>
+
+</body>
+</html>
