@@ -4,6 +4,12 @@ An interactive tool for exploring **Iterated Function Systems (IFS)**, a class o
 
 ---
 
+## 🚀 [Try it — Standalone IFS Explorer](standalone/ifs.html)
+
+A self-contained version that runs in any modern browser with no installation, no server, and no CMS. Open the file and start exploring. Includes 9 sample fractals, local `.ifs` file open/save, and PNG export.
+
+---
+
 ## 📄 [IFS Tutorial (PDF)](ifstutorial.pdf)
 
 The 12-page classroom tutorial used to teach students how to use the application — written by the developer's father for his college mathematics courses. Start here if you want to understand how IFS works and how to create your own fractals.
@@ -201,8 +207,8 @@ The CMS version will be reworked as a first-class web application that does not 
 - **Feel like a tool** — not a ported Windows app; modern UI but with the tactile quality of a creative instrument
 - **Classroom-ready** — a teacher can set up a class, students create accounts, gallery and voting built in
 
-### Long Term — Standalone HTML File
-A fully self-contained `ifs.html` that runs in any browser with no server, no installation, and no CMS — open the file, load a `.ifs`, start exploring. This would include the IFS decoder/encoder, full rendering engine, PNG export, and the sample library embedded in the page.
+### Done — Standalone HTML File
+`standalone/ifs.html` is a fully self-contained page that runs in any browser with no server, no installation, and no CMS. Open the file, load a `.ifs`, start exploring. Includes the IFS decoder/encoder, full rendering engine, PNG export, and 9 sample fractals embedded in the page.
 
 ---
 
